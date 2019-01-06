@@ -8,6 +8,8 @@ This project doesn't duplicate an odd node like some other implementation
 ## Example
 
 ```go
+import "github.com/varshard/merkletree"
+
 tree := Tree{}
 
 leaves := []*Node{
