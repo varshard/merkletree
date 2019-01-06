@@ -62,3 +62,26 @@ func TestAppendLeaf(t *testing.T) {
 		assert.Equal(t, tree.Leaves[i], leaf)
 	}
 }
+
+func TestFindLeaf(t *testing.T) {
+	target := NewNode([]byte("2"))
+
+	tree := Tree{}
+	tree.AppendLeaf(NewNode([]byte("1")))
+	tree.AppendLeaf(target)
+	leaf := tree.FindLeaf(target.Hash)
+
+	assert.Equal(t, leaf.Hash, target.Hash)
+}
+
+func TestFindLeafNotFound(t *testing.T) {
+	target := computeHash([]byte("3"))
+
+	tree := Tree{}
+	tree.AppendLeaf(NewNode([]byte("1")))
+	tree.AppendLeaf(NewNode([]byte("2")))
+
+	leaf := tree.FindLeaf(target)
+
+	assert.Nil(t, leaf)
+}

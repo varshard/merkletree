@@ -1,6 +1,9 @@
 package merkletree
 
-import "fmt"
+import (
+	"fmt"
+	"reflect"
+)
 
 // TODO: verification
 
@@ -42,4 +45,15 @@ func (t *Tree) BuildTree(leaves []*Node) error {
 // to be built into a tree with BuildTree
 func (t *Tree) AppendLeaf(leaf *Node) {
 	t.Leaves = append(t.Leaves, leaf)
+}
+
+// FindLeaf find a leaf node that match supplied hash
+func (t *Tree) FindLeaf(hash []byte) *Node {
+	for _, leaf := range t.Leaves {
+		if reflect.DeepEqual(leaf.Hash, hash) {
+			return leaf
+		}
+	}
+
+	return nil
 }
