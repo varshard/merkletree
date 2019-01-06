@@ -30,12 +30,27 @@ func TestBuildTree(t *testing.T) {
 	leaves := []*Node{
 		NewNode([]byte("1")),
 		NewNode([]byte("2")),
+	}
+
+	rootHash := computeHash(append(leaves[0].Hash, leaves[1].Hash...))
+
+	assert.NoError(t, tree.BuildTree(leaves))
+	assert.Equal(t, tree.Root.Hash, rootHash)
+}
+
+func TestBuildTreeOddNode(t *testing.T) {
+	tree := Tree{}
+	leaves := []*Node{
+		NewNode([]byte("1")),
+		NewNode([]byte("2")),
 		NewNode([]byte("3")),
 	}
 
-	assert.NoError(t, tree.BuildTree(leaves))
+	firstRootHash := computeHash(append(leaves[0].Hash, leaves[1].Hash...))
+	rootHash := computeHash(append(firstRootHash, leaves[2].Hash...))
 
-	assert.NotNil(t, tree.Root)
+	assert.NoError(t, tree.BuildTree(leaves))
+	assert.Equal(t, tree.Root.Hash, rootHash)
 }
 
 func TestAppendLeaf(t *testing.T) {
@@ -43,7 +58,7 @@ func TestAppendLeaf(t *testing.T) {
 	tree.AppendLeaf(NewNode([]byte("1")))
 	tree.AppendLeaf(NewNode([]byte("2")))
 
-	for i, leafe := range tree.Leaves {
-		assert.Equal(t, tree.Leaves[i], leafe)
+	for i, leaf := range tree.Leaves {
+		assert.Equal(t, tree.Leaves[i], leaf)
 	}
 }
