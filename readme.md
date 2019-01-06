@@ -12,14 +12,16 @@ import "github.com/varshard/merkletree"
 
 tree := Tree{}
 
-leaves := []*Node{
-	NewNode([]byte("1")),
-	NewNode([]byte("2")),
-	NewNode([]byte("3")),
+func main() {
+	leaves := []*Node{
+		NewNode([]byte("1")),
+		NewNode([]byte("2")),
+		NewNode([]byte("3")),
+	}
+
+	tree.BuildTree(leaves)
+
+	// Get root's hash
+	fmt.Println(tree.Root.Hash)
 }
-
-tree.BuildTree(leaves)
-
-// Get root's hash
-fmt.Println(tree.Root.Hash)
 ```
