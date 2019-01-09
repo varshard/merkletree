@@ -41,6 +41,32 @@ func (t *Tree) BuildTree(leaves []*Node) error {
 	return nil
 }
 
+// BuildAuditTrail will build a trail composed of hash that are required to replicate the root hash
+func (t *Tree) BuildAuditTrail(auditTrail []*ProofHash, parent *Node, child *Node) ([]*ProofHash, error) {
+	if parent != nil {
+		if child.Parent != parent {
+			return nil, fmt.Errorf("parent of child is not expected parent")
+		}
+
+		sibling := parent.Left
+		direction := RightBranch
+		if parent.Left == child {
+			sibling = parent.Right
+			direction = LeftBranch
+		}
+
+		proof := ProofHash{
+			Hash:      sibling.Hash,
+			Direction: direction,
+		}
+
+		auditTrail = append(auditTrail, &proof)
+
+		return t.BuildAuditTrail(auditTrail, parent.Parent, parent)
+	}
+	return auditTrail, nil
+}
+
 // AppendLeaf append a leaf node to Leaves,
 // to be built into a tree with BuildTree
 func (t *Tree) AppendLeaf(leaf *Node) {
