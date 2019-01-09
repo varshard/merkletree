@@ -11,6 +11,7 @@ const (
 	RightBranch Branch = 2
 )
 
+// ProofHash is a hash for auditing
 type ProofHash struct {
 	Hash      []byte
 	Direction Branch
