@@ -102,9 +102,9 @@ func TestBuildAuditTrailOddLeaves(t *testing.T) {
 	assert.NoError(t, err)
 
 	assert.Equal(t, leaves[0].Hash, auditTrail[0].Hash)
-	assert.Equal(t, RightBranch, auditTrail[0].Direction)
+	assert.Equal(t, LeftBranch, auditTrail[0].Direction)
 	assert.Equal(t, leaves[2].Hash, auditTrail[1].Hash)
-	assert.Equal(t, LeftBranch, auditTrail[1].Direction)
+	assert.Equal(t, RightBranch, auditTrail[1].Direction)
 }
 
 func TestBuildAuditTrailEventLeaves(t *testing.T) {
@@ -127,7 +127,7 @@ func TestBuildAuditTrailEventLeaves(t *testing.T) {
 	leaf12 := NewNode(leaf12Hash)
 
 	assert.Equal(t, leaves[3].Hash, auditTrail[0].Hash)
-	assert.Equal(t, LeftBranch, auditTrail[0].Direction)
+	assert.Equal(t, RightBranch, auditTrail[0].Direction)
 	assert.Equal(t, leaf12.Hash, auditTrail[1].Hash)
-	assert.Equal(t, RightBranch, auditTrail[1].Direction)
+	assert.Equal(t, LeftBranch, auditTrail[1].Direction)
 }

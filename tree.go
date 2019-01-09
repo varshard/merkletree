@@ -49,10 +49,10 @@ func (t *Tree) BuildAuditTrail(auditTrail []*ProofHash, parent *Node, child *Nod
 		}
 
 		sibling := parent.Left
-		direction := RightBranch
+		direction := LeftBranch
 		if parent.Left == child {
 			sibling = parent.Right
-			direction = LeftBranch
+			direction = RightBranch
 		}
 
 		proof := ProofHash{
@@ -82,4 +82,8 @@ func (t *Tree) FindLeaf(hash []byte) *Node {
 	}
 
 	return nil
+}
+
+func (t *Tree) VerifyHash(hash []byte) {
+
 }
