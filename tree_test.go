@@ -167,3 +167,27 @@ func TestAuditProof(t *testing.T) {
 	assert.Equal(t, leaf12.Hash, auditTrail[1].Hash)
 	assert.Equal(t, LeftBranch, auditTrail[1].Direction)
 }
+
+func TestAuditProofErrorIfRootSupplied(t *testing.T) {
+	tree := Tree{}
+	leaves := []*Node{
+		NewNode([]byte("1")),
+	}
+	assert.NoError(t, tree.BuildTree(leaves))
+
+	auditTrail, err := tree.AuditProof(tree.Root.Hash)
+	assert.Error(t, err)
+	assert.Nil(t, auditTrail)
+}
+
+func TestAuditProofReturnNilIfHashNotFound(t *testing.T) {
+	tree := Tree{}
+	leaves := []*Node{
+		NewNode([]byte("1")),
+	}
+	assert.NoError(t, tree.BuildTree(leaves))
+
+	auditTrail, err := tree.AuditProof(NewNode([]byte("2")).Hash)
+	assert.NoError(t, err)
+	assert.Nil(t, auditTrail)
+}
