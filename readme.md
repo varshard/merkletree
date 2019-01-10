@@ -1,7 +1,7 @@
-# MerkleTree
+# MerkleTree (WIP)
 
 Merkle Tree implemented in Go.
-This is a port of https://github.com/cliftonm/MerkleTree from c# to Go.
+This is a port of https://github.com/cliftonm/MerkleTree from C# to Go.
 
 This project doesn't duplicate an odd node like some other implementation
 
