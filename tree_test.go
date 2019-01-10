@@ -23,6 +23,7 @@ func TestBuildTreeSingleNode(t *testing.T) {
 
 	assert.NotNil(t, tree.Root)
 	assert.Equal(t, tree.Root.Hash, leaves[0].Hash)
+	assert.Equal(t, 1, len(tree.Leaves))
 }
 
 func TestBuildTree(t *testing.T) {
@@ -36,6 +37,7 @@ func TestBuildTree(t *testing.T) {
 
 	assert.NoError(t, tree.BuildTree(leaves))
 	assert.Equal(t, tree.Root.Hash, rootHash)
+	assert.Equal(t, 2, len(tree.Leaves))
 }
 
 func TestBuildTreeOddNode(t *testing.T) {
@@ -51,6 +53,7 @@ func TestBuildTreeOddNode(t *testing.T) {
 
 	assert.NoError(t, tree.BuildTree(leaves))
 	assert.Equal(t, tree.Root.Hash, rootHash)
+	assert.Equal(t, 3, len(tree.Leaves))
 }
 
 func TestAppendLeaf(t *testing.T) {
