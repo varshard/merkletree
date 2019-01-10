@@ -38,7 +38,30 @@ func (t *Tree) BuildTree(leaves []*Node) error {
 		t.BuildTree(parents)
 	}
 
+	t.Leaves = leaves
 	return nil
+}
+
+// AuditProof used to find an trail of hashes to prove that the supplied hash is a part of the tree
+func (t *Tree) AuditProof(hash []byte) ([]*ProofHash, error) {
+	var auditTrail []*ProofHash
+	var err error
+
+	leafNode := t.FindLeaf(hash)
+
+	if leafNode != nil {
+		if leafNode.Parent == nil {
+			return nil, fmt.Errorf("expected leaf hash to have a parent hash")
+		}
+
+		parent := leafNode.Parent
+		auditTrail, err = t.BuildAuditTrail(auditTrail, parent, leafNode)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return auditTrail, nil
 }
 
 // BuildAuditTrail will build a trail composed of hash that are required to replicate the root hash
@@ -82,8 +105,4 @@ func (t *Tree) FindLeaf(hash []byte) *Node {
 	}
 
 	return nil
-}
-
-func (t *Tree) VerifyHash(hash []byte) {
-
 }
