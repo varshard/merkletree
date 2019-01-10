@@ -194,3 +194,39 @@ func TestAuditProofReturnNilIfHashNotFound(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Nil(t, auditTrail)
 }
+
+func TestVerifyAudit(t *testing.T) {
+	target := NewNode([]byte("2"))
+	tree := Tree{}
+	leaves := []*Node{
+		NewNode([]byte("1")),
+		target,
+		NewNode([]byte("3")),
+		NewNode([]byte("4")),
+	}
+	assert.NoError(t, tree.BuildTree(leaves))
+	rootHash := tree.Root.Hash
+
+	auditTrail, err := tree.AuditProof(target.Hash)
+	assert.NoError(t, err)
+
+	assert.True(t, tree.VerifyAudit(rootHash, target.Hash, auditTrail))
+}
+
+func TestVerifyAuditFalseIfTargetIsNotInTheTree(t *testing.T) {
+	target := NewNode([]byte("5"))
+	tree := Tree{}
+	leaves := []*Node{
+		NewNode([]byte("1")),
+		NewNode([]byte("2")),
+		NewNode([]byte("3")),
+		NewNode([]byte("4")),
+	}
+	assert.NoError(t, tree.BuildTree(leaves))
+	rootHash := tree.Root.Hash
+
+	auditTrail, err := tree.AuditProof(target.Hash)
+	assert.NoError(t, err)
+
+	assert.False(t, tree.VerifyAudit(rootHash, target.Hash, auditTrail))
+}

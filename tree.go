@@ -64,6 +64,22 @@ func (t *Tree) AuditProof(hash []byte) ([]*ProofHash, error) {
 	return auditTrail, nil
 }
 
+// VerifyAudit verify that supplied targetHash and its auditTrail can reconstruct its root hash
+func (t *Tree) VerifyAudit(rootHash []byte, targetHash []byte, auditTrail []*ProofHash) bool {
+	testHash := targetHash
+
+	for _, proof := range auditTrail {
+		if proof.Direction == RightBranch {
+			testHash = computeHash(append(testHash, proof.Hash...))
+		} else {
+			testHash = computeHash(append(proof.Hash, testHash...))
+		}
+
+	}
+
+	return reflect.DeepEqual(rootHash, testHash)
+}
+
 // BuildAuditTrail will build a trail composed of hash that are required to replicate the root hash
 func (t *Tree) BuildAuditTrail(auditTrail []*ProofHash, parent *Node, child *Node) ([]*ProofHash, error) {
 	if parent != nil {
