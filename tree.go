@@ -5,8 +5,6 @@ import (
 	"reflect"
 )
 
-// TODO: verification
-
 // Tree a merkle tree structure
 type Tree struct {
 	Root   *Node
