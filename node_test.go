@@ -74,3 +74,30 @@ func TestMarshalNestedNode(t *testing.T) {
 	assert.NoError(t, unmarshaledNode.FromJSON(marshaled))
 	assert.Equal(t, n, &unmarshaledNode)
 }
+
+func TestMarshal2LevelNode(t *testing.T) {
+	left1 := Node{
+		Hash: []byte("1"),
+	}
+	right1 := Node{
+		Hash: []byte("2"),
+	}
+	parentLeft := NewParentNode(&left1, &right1)
+
+	left2 := Node{
+		Hash: []byte("3"),
+	}
+	right2 := Node{
+		Hash: []byte("4"),
+	}
+	parentRight := NewParentNode(&left2, &right2)
+
+	n := NewParentNode(parentLeft, parentRight)
+
+	marshaled, err := json.Marshal(n)
+	assert.NoError(t, err)
+
+	unmarshaledNode := Node{}
+	assert.NoError(t, unmarshaledNode.FromJSON(marshaled))
+	assert.Equal(t, n, &unmarshaledNode)
+}

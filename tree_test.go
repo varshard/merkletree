@@ -1,6 +1,7 @@
 package merkletree
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,7 +21,6 @@ func TestBuildTreeSingleNode(t *testing.T) {
 	}
 
 	assert.NoError(t, tree.BuildTree(leaves))
-
 	assert.NotNil(t, tree.Root)
 	assert.Equal(t, tree.Root.Hash, leaves[0].Hash)
 	assert.Equal(t, 1, len(tree.Leaves))
@@ -112,12 +112,13 @@ func TestBuildAuditTrailOddLeaves(t *testing.T) {
 		NewNode([]byte("2")),
 		NewNode([]byte("3")),
 	}
+
 	assert.NoError(t, tree.BuildTree(leaves))
 
 	target := leaves[1]
-	auditTrail, err := tree.BuildAuditTrail(auditTrail, target.Parent, target)
-	assert.NoError(t, err)
+	auditTrail, err := tree.BuildAuditTrail(auditTrail, target.parent, target)
 
+	assert.NoError(t, err)
 	assert.Equal(t, leaves[0].Hash, auditTrail[0].Hash)
 	assert.Equal(t, LeftBranch, auditTrail[0].Direction)
 	assert.Equal(t, leaves[2].Hash, auditTrail[1].Hash)
@@ -134,10 +135,12 @@ func TestBuildAuditTrailEventLeaves(t *testing.T) {
 		NewNode([]byte("3")),
 		NewNode([]byte("4")),
 	}
+
 	assert.NoError(t, tree.BuildTree(leaves))
 
 	target := leaves[2]
-	auditTrail, err := tree.BuildAuditTrail(auditTrail, target.Parent, target)
+	auditTrail, err := tree.BuildAuditTrail(auditTrail, target.parent, target)
+
 	assert.NoError(t, err)
 
 	leaf12Hash := append(leaves[0].Hash, leaves[1].Hash...)[:]
@@ -157,9 +160,11 @@ func TestAuditProof(t *testing.T) {
 		NewNode([]byte("3")),
 		NewNode([]byte("4")),
 	}
+
 	assert.NoError(t, tree.BuildTree(leaves))
 
 	auditTrail, err := tree.AuditProof(leaves[2].Hash)
+
 	assert.NoError(t, err)
 
 	leaf12Hash := append(leaves[0].Hash, leaves[1].Hash...)[:]
@@ -176,9 +181,11 @@ func TestAuditProofErrorIfRootSupplied(t *testing.T) {
 	leaves := []*Node{
 		NewNode([]byte("1")),
 	}
+
 	assert.NoError(t, tree.BuildTree(leaves))
 
 	auditTrail, err := tree.AuditProof(tree.Root.Hash)
+
 	assert.Error(t, err)
 	assert.Nil(t, auditTrail)
 }
@@ -191,6 +198,7 @@ func TestAuditProofReturnNilIfHashNotFound(t *testing.T) {
 	assert.NoError(t, tree.BuildTree(leaves))
 
 	auditTrail, err := tree.AuditProof(NewNode([]byte("2")).Hash)
+
 	assert.NoError(t, err)
 	assert.Nil(t, auditTrail)
 }
@@ -204,12 +212,13 @@ func TestVerifyAudit(t *testing.T) {
 		NewNode([]byte("3")),
 		NewNode([]byte("4")),
 	}
+
 	assert.NoError(t, tree.BuildTree(leaves))
+
 	rootHash := tree.Root.Hash
-
 	auditTrail, err := tree.AuditProof(target.Hash)
-	assert.NoError(t, err)
 
+	assert.NoError(t, err)
 	assert.True(t, tree.VerifyAudit(rootHash, target.Hash, auditTrail))
 }
 
@@ -222,12 +231,13 @@ func TestVerifyAuditFalseIfTargetIsNotInTheTree(t *testing.T) {
 		NewNode([]byte("3")),
 		NewNode([]byte("4")),
 	}
+
 	assert.NoError(t, tree.BuildTree(leaves))
+
 	rootHash := tree.Root.Hash
-
 	auditTrail, err := tree.AuditProof(target.Hash)
-	assert.NoError(t, err)
 
+	assert.NoError(t, err)
 	assert.False(t, tree.VerifyAudit(rootHash, target.Hash, auditTrail))
 }
 
@@ -240,8 +250,8 @@ func TestVerify(t *testing.T) {
 		NewNode([]byte("3")),
 		NewNode([]byte("4")),
 	}
-	assert.NoError(t, tree.BuildTree(leaves))
 
+	assert.NoError(t, tree.BuildTree(leaves))
 	assert.True(t, tree.Verify(tree.Root.Hash, target.Hash))
 }
 
@@ -254,7 +264,26 @@ func TestVerifyReturnTrueIfNotvalid(t *testing.T) {
 		NewNode([]byte("3")),
 		NewNode([]byte("4")),
 	}
+
+	assert.NoError(t, tree.BuildTree(leaves))
+	assert.False(t, tree.Verify(tree.Root.Hash, target.Hash))
+}
+
+func TestMarshalTree(t *testing.T) {
+	tree := Tree{}
+	leaves := []*Node{
+		NewNode([]byte("1")),
+		NewNode([]byte("2")),
+		NewNode([]byte("3")),
+		NewNode([]byte("4")),
+	}
 	assert.NoError(t, tree.BuildTree(leaves))
 
-	assert.False(t, tree.Verify(tree.Root.Hash, target.Hash))
+	marshaled, err := json.Marshal(tree)
+
+	assert.NoError(t, err)
+
+	unmarshaled := Tree{}
+	assert.NoError(t, unmarshaled.FromJSON(marshaled))
+	assert.Equal(t, tree, unmarshaled)
 }

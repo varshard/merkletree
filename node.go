@@ -1,5 +1,7 @@
 package merkletree
 
+// TODO: Make a custom UnmashalJSON
+
 import (
 	"crypto/sha256"
 	"encoding/json"

@@ -1,14 +1,17 @@
 package merkletree
 
+// TODO: Make a custom UnmashalJSON
+
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 )
 
 // Tree a merkle tree structure
 type Tree struct {
-	Root   *Node
-	Leaves []*Node
+	Root   *Node   `json:"root"`
+	Leaves []*Node `json:"leaves"`
 }
 
 // BuildTree build a tree out of a slice of leaves
@@ -48,11 +51,11 @@ func (t *Tree) AuditProof(hash []byte) ([]*ProofHash, error) {
 	leafNode := t.FindLeaf(hash)
 
 	if leafNode != nil {
-		if leafNode.Parent == nil {
+		if leafNode.parent == nil {
 			return nil, fmt.Errorf("expected leaf hash to have a parent hash")
 		}
 
-		parent := leafNode.Parent
+		parent := leafNode.parent
 		auditTrail, err = t.BuildAuditTrail(auditTrail, parent, leafNode)
 		if err != nil {
 			return nil, err
@@ -91,7 +94,7 @@ func (t *Tree) Verify(rootHash []byte, targetHash []byte) bool {
 // BuildAuditTrail will build a trail composed of hash that are required to replicate the root hash
 func (t *Tree) BuildAuditTrail(auditTrail []*ProofHash, parent *Node, child *Node) ([]*ProofHash, error) {
 	if parent != nil {
-		if child.Parent != parent {
+		if child.parent != parent {
 			return nil, fmt.Errorf("parent of child is not expected parent")
 		}
 
@@ -109,7 +112,7 @@ func (t *Tree) BuildAuditTrail(auditTrail []*ProofHash, parent *Node, child *Nod
 
 		auditTrail = append(auditTrail, &proof)
 
-		return t.BuildAuditTrail(auditTrail, parent.Parent, parent)
+		return t.BuildAuditTrail(auditTrail, parent.parent, parent)
 	}
 	return auditTrail, nil
 }
@@ -127,6 +130,15 @@ func (t *Tree) FindLeaf(hash []byte) *Node {
 			return leaf
 		}
 	}
+
+	return nil
+}
+
+func (t *Tree) FromJSON(raw []byte) error {
+	if err := json.Unmarshal(raw, t); err != nil {
+		return err
+	}
+	t.BuildTree(t.Leaves)
 
 	return nil
 }
