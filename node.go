@@ -2,14 +2,15 @@ package merkletree
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 )
 
 // Node is a node in a merkle tree
 type Node struct {
-	Hash   []byte
-	Left   *Node
-	Right  *Node
-	Parent *Node
+	Hash   []byte `json:"hash"`
+	Left   *Node  `json:"left"`
+	Right  *Node  `json:"right"`
+	parent *Node
 }
 
 // NewNode create a leave node and hash its data
@@ -21,15 +22,35 @@ func NewNode(data []byte) *Node {
 	return &n
 }
 
+// FromJSON will construct the Node from parsed raw json
+func (n *Node) FromJSON(raw []byte) error {
+	if err := json.Unmarshal(raw, n); err != nil {
+		return err
+	}
+
+	populateParent(n, n.Left)
+	populateParent(n, n.Right)
+
+	return nil
+}
+
+func populateParent(parent *Node, node *Node) {
+	if node != nil {
+		node.parent = parent
+		populateParent(node, node.Left)
+		populateParent(node, node.Right)
+	}
+}
+
 // NewParentNode construct a new parent node out of leave nodes
 func NewParentNode(left *Node, right *Node) *Node {
 	n := Node{}
 	n.Left = left
 	n.Right = right
-	left.Parent = &n
+	left.parent = &n
 
 	if right != nil {
-		right.Parent = &n
+		right.parent = &n
 	}
 
 	n.Hash = computeConcatinatedHash(left, right)

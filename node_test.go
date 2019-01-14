@@ -2,6 +2,7 @@ package merkletree
 
 import (
 	"crypto/sha256"
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -41,4 +42,35 @@ func TestNewParentWithOddNode(t *testing.T) {
 	assert.NotNil(t, n.Left)
 	assert.Nil(t, n.Right)
 	assert.Equal(t, n.Hash, left.Hash)
+}
+
+func TestMarshalNode(t *testing.T) {
+	n := Node{
+		Hash: []byte("1"),
+	}
+
+	marshaled, err := json.Marshal(n)
+	assert.NoError(t, err)
+
+	unmarshaledNode := Node{}
+	unmarshaledNode.FromJSON(marshaled)
+	assert.Equal(t, n, unmarshaledNode)
+}
+
+func TestMarshalNestedNode(t *testing.T) {
+	left := Node{
+		Hash: []byte("1"),
+	}
+	right := Node{
+		Hash: []byte("2"),
+	}
+
+	n := NewParentNode(&left, &right)
+
+	marshaled, err := json.Marshal(n)
+	assert.NoError(t, err)
+
+	unmarshaledNode := Node{}
+	assert.NoError(t, unmarshaledNode.FromJSON(marshaled))
+	assert.Equal(t, n, &unmarshaledNode)
 }
