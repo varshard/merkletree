@@ -230,3 +230,31 @@ func TestVerifyAuditFalseIfTargetIsNotInTheTree(t *testing.T) {
 
 	assert.False(t, tree.VerifyAudit(rootHash, target.Hash, auditTrail))
 }
+
+func TestVerify(t *testing.T) {
+	target := NewNode([]byte("2"))
+	tree := Tree{}
+	leaves := []*Node{
+		NewNode([]byte("1")),
+		NewNode([]byte("2")),
+		NewNode([]byte("3")),
+		NewNode([]byte("4")),
+	}
+	assert.NoError(t, tree.BuildTree(leaves))
+
+	assert.True(t, tree.Verify(tree.Root.Hash, target.Hash))
+}
+
+func TestVerifyReturnTrueIfNotvalid(t *testing.T) {
+	target := NewNode([]byte("5"))
+	tree := Tree{}
+	leaves := []*Node{
+		NewNode([]byte("1")),
+		NewNode([]byte("2")),
+		NewNode([]byte("3")),
+		NewNode([]byte("4")),
+	}
+	assert.NoError(t, tree.BuildTree(leaves))
+
+	assert.False(t, tree.Verify(tree.Root.Hash, target.Hash))
+}

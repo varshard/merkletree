@@ -40,7 +40,7 @@ func (t *Tree) BuildTree(leaves []*Node) error {
 	return nil
 }
 
-// AuditProof used to find an trail of hashes to prove that the supplied hash is a part of the tree
+// AuditProof returns the audit proof hashes to reconstruct the root hash.
 func (t *Tree) AuditProof(hash []byte) ([]*ProofHash, error) {
 	var auditTrail []*ProofHash
 	var err error
@@ -62,7 +62,7 @@ func (t *Tree) AuditProof(hash []byte) ([]*ProofHash, error) {
 	return auditTrail, nil
 }
 
-// VerifyAudit verify that supplied targetHash and its auditTrail can reconstruct its root hash
+// VerifyAudit verify that if we walk up the tree from a particular leaf, we encounter the expected root hash.
 func (t *Tree) VerifyAudit(rootHash []byte, targetHash []byte, auditTrail []*ProofHash) bool {
 	testHash := targetHash
 
@@ -76,6 +76,16 @@ func (t *Tree) VerifyAudit(rootHash []byte, targetHash []byte, auditTrail []*Pro
 	}
 
 	return reflect.DeepEqual(rootHash, testHash)
+}
+
+// Verify will verify that the rootHash and the targetHash are valid.
+func (t *Tree) Verify(rootHash []byte, targetHash []byte) bool {
+	auditTrail, err := t.AuditProof(targetHash)
+	if err != nil {
+		return false
+	}
+
+	return t.VerifyAudit(rootHash, targetHash, auditTrail)
 }
 
 // BuildAuditTrail will build a trail composed of hash that are required to replicate the root hash
