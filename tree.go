@@ -14,8 +14,13 @@ type Tree struct {
 	Leaves []*Node `json:"leaves"`
 }
 
-// BuildTree build a tree out of a slice of leaves
-func (t *Tree) BuildTree(leaves []*Node) error {
+// BuildTree build a tree out of Leaves
+func (t *Tree) BuildTree() error {
+	return t.buildTree(t.Leaves)
+}
+
+// buildTree build a tree out of a slice of leaves
+func (t *Tree) buildTree(leaves []*Node) error {
 	leavesCount := len(leaves)
 	if leavesCount < 1 {
 		return fmt.Errorf("Leaves is empty")
@@ -36,7 +41,7 @@ func (t *Tree) BuildTree(leaves []*Node) error {
 			parents = append(parents, NewParentNode(left, right))
 		}
 
-		t.BuildTree(parents)
+		t.buildTree(parents)
 	}
 
 	t.Leaves = leaves
@@ -134,11 +139,12 @@ func (t *Tree) FindLeaf(hash []byte) *Node {
 	return nil
 }
 
+// FromJSON build a tree from JSON
 func (t *Tree) FromJSON(raw []byte) error {
 	if err := json.Unmarshal(raw, t); err != nil {
 		return err
 	}
-	t.BuildTree(t.Leaves)
+	t.BuildTree()
 
 	return nil
 }
