@@ -16,15 +16,16 @@ import "github.com/varshard/merkletree"
 
 ```go
 func main() {
-	tree := Tree{}
-
 	leaves := []*Node{
 		NewNode([]byte("1")),
 		NewNode([]byte("2")),
 		NewNode([]byte("3")),
 	}
+	tree := Tree{
+		Leaves: leaves,
+	}
 
-	tree.BuildTree(leaves)
+	tree.BuildTree()
 
 	// Get root's hash
 	fmt.Println(tree.Root.Hash)
