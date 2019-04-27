@@ -1,5 +1,7 @@
 # MerkleTree
 
+[![CircleCI](https://circleci.com/gh/varshard/merkletree.svg?style=shield)](https://circleci.com/gh/varshard/merkletree)
+
 Merkle Tree implemented in Go.
 This is a port of https://github.com/cliftonm/MerkleTree from C# to Go.
 
