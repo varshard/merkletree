@@ -10,6 +10,7 @@ This is a port of https://github.com/cliftonm/MerkleTree from C# to Go.
 ## Usages
 
 ### Import
+
 ```go
 import "github.com/varshard/merkletree"
 ```
@@ -35,6 +36,7 @@ func main() {
 ```
 
 ### Verify that a hash and root are of the same tree
+
 ```go
 target := sha256.Sum256([]byte("2")])
 
