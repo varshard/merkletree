@@ -63,6 +63,26 @@ func TestBuildTreeOddNode(t *testing.T) {
 	assert.Equal(t, 3, len(tree.Leaves))
 }
 
+func TestBuildTreeMustBalance(t *testing.T) {
+	leaves := []*Node{
+		NewNode([]byte("1")),
+		NewNode([]byte("2")),
+		NewNode([]byte("3")),
+	}
+	tree := Tree{
+		Leaves:      leaves,
+		MustBalance: true,
+	}
+
+	leftRootHash := computeHash(append(leaves[0].Hash, leaves[1].Hash...))
+	rightRootHash := computeHash(append(leaves[2].Hash, leaves[2].Hash...))
+	rootHash := computeHash(append(leftRootHash, rightRootHash...))
+
+	assert.NoError(t, tree.BuildTree())
+	assert.Equal(t, tree.Root.Hash, rootHash)
+	assert.Equal(t, 4, len(tree.Leaves))
+}
+
 func TestAppendLeaf(t *testing.T) {
 	tree := Tree{}
 	tree.AppendLeaf(NewNode([]byte("1")))
