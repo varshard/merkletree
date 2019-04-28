@@ -32,11 +32,11 @@ jobs: # basic units of work in a run
             - "/go/pkg/mod"
 
       - store_artifacts: # upload test summary for display in Artifacts
-          path: $TEST_RESULTS
+          path: /tmp/test-results/gotestsum
           destination: raw-test-output
 
       - store_test_results: # upload test results for display in Test Summary
-          path: $TEST_RESULTS
+          path: /tmp/test-results/gotestsum
 workflows:
   version: 2
   build-workflow:
