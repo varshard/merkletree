@@ -26,6 +26,8 @@ func main() {
 	}
 	tree := Tree{
 		Leaves: leaves,
+		// In case that we need even leaves
+		MustBalance: true
 	}
 
 	tree.BuildTree()

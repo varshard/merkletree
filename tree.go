@@ -10,13 +10,29 @@ import (
 
 // Tree a merkle tree structure
 type Tree struct {
-	Root   *Node   `json:"root"`
-	Leaves []*Node `json:"leaves"`
+	Root        *Node   `json:"root"`
+	Leaves      []*Node `json:"leaves"`
+	MustBalance bool    `json:"MustBalance"`
 }
 
 // BuildTree build a tree out of Leaves
 func (t *Tree) BuildTree() error {
+	if t.MustBalance {
+		t.Leaves = t.fixOdd(t.Leaves)
+	}
+
 	return t.buildTree(t.Leaves)
+}
+
+// fixOdd will duplicate the last odd leave to make the tree contains even leaves
+func (t *Tree) fixOdd(leaves []*Node) []*Node {
+	leavesCount := len(leaves)
+	if leavesCount%2 == 0 {
+		return leaves
+	}
+
+	lastLeave := leaves[leavesCount-1]
+	return append(leaves, lastLeave)
 }
 
 // buildTree build a tree out of a slice of leaves
@@ -80,7 +96,6 @@ func (t *Tree) VerifyAudit(rootHash []byte, targetHash []byte, auditTrail []*Pro
 		} else {
 			testHash = computeHash(append(proof.Hash, testHash...))
 		}
-
 	}
 
 	return reflect.DeepEqual(rootHash, testHash)
